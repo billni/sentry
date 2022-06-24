@@ -70,7 +70,8 @@ docker run  --name sentry-postgres --restart always -e POSTGRES_PASSWORD='postgr
 
 
 4. Create SENTRY_SECRET_KEY to <secrect_key>
- docker run --rm sentry config generate-secret-key 
+
+docker run --rm sentry config generate-secret-key 
 
 5. when initial db, must to use "upgrade"
 
