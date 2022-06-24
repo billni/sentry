@@ -55,7 +55,8 @@ sending events from any language, in any application.
     Sentry\!)
 
 # Manual
-1. Pull 3 images
+
+1 Pull 3 images
 docker pull  redis
 docker pull postgres
 docker pull getsentry/sentry:nightly
