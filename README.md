@@ -57,12 +57,14 @@ sending events from any language, in any application.
 # Manual
 
 1. Pull 3 images
+
 docker pull  redis
 docker pull postgres
 docker pull getsentry/sentry:nightly
 
 2. Run redis
-    docker run -d --name sentry-redis redis
+
+docker run -d --name sentry-redis redis
 
 3. Create Postgres Database
 
@@ -78,6 +80,7 @@ docker run --rm sentry config generate-secret-key
 docker run -it --rm --name sentry e  SENTRY_SECRET_KEY=‘<secret_key>'  --link sentry-postgres:postgres --link sentry-redis:redis  -p 9000:9000  getsentry/sentry:nightly  upgrade
 
 6. Run sentry formly
+
 docker run -it -d --name sentry -e  SENTRY_SECRET_KEY='<secret_key>'  --link sentry-postgres:postgres --link sentry-redis:redis  -p 9000:9000  getsentry/sentry:nightly
 
 7. Configuring the initial user, If you did not create a superuser during upgrade, use the following to create one:
@@ -87,6 +90,7 @@ docker run -it --rm -e SENTRY_SECRET_KEY=‘<secret_key>' --link sentry-redis:re
 
 8. create cron and work
 The default config needs a celery beat and celery workers, start as many workers as you need (each with a unique name)
+
  docker run -d --name sentry-cron -e SENTRY_SECRET_KEY=‘<secret_key>' --link sentry-postgres:postgres --link sentry-redis:redis sentry run cron
 
  docker run -d --name sentry-worker-1 -e SENTRY_SECRET_KEY=‘<secret_key>' --link sentry-postgres:postgres --link sentry-redis:redis sentry run worker
