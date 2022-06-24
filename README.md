@@ -53,3 +53,40 @@ sending events from any language, in any application.
   - [Code](https://github.com/getsentry/sentry)
   - [Transifex](https://www.transifex.com/getsentry/sentry/) (Translate
     Sentry\!)
+
+# Manual
+1. Pull 3 images
+docker pull  redis
+docker pull postgres
+docker pull getsentry/sentry:nightly
+
+2 Run redis
+    docker run -d --name sentry-redis redis
+
+3 Create Postgres Database
+
+docker run  --name sentry-postgres --restart always -e POSTGRES_PASSWORD='postgres123' -e ALLOW_IP_RANGE=0.0.0.0/0 -v /data/postgresql:/var/lib/postgresql -p 5432:5432 --privileged -d postgres
+
+
+4 Create SENTRY_SECRET_KEY to <secrect_key>
+ docker run --rm sentry config generate-secret-key 
+
+5 when initial db, must to use "upgrade"
+
+docker run -it --rm --name sentry e  SENTRY_SECRET_KEY=‘<secret_key>'  --link sentry-postgres:postgres --link sentry-redis:redis  -p 9000:9000  getsentry/sentry:nightly  upgrade
+
+6 run sentry formly
+docker run -it -d --name sentry -e  SENTRY_SECRET_KEY='<secret_key>'  --link sentry-postgres:postgres --link sentry-redis:redis  -p 9000:9000  getsentry/sentry:nightly
+
+7 Configuring the initial user, If you did not create a superuser during upgrade, use the following to create one:
+docker run -it --rm -e SENTRY_SECRET_KEY=‘<secret_key>' --link sentry-redis:redis --link sentry-postgres:postgres sentry createuser  --superuser
+
+
+8 create cron and work
+The default config needs a celery beat and celery workers, start as many workers as you need (each with a unique name)
+ docker run -d --name sentry-cron -e SENTRY_SECRET_KEY=‘<secret_key>' --link sentry-postgres:postgres --link sentry-redis:redis sentry run cron
+
+ docker run -d --name sentry-worker-1 -e SENTRY_SECRET_KEY=‘<secret_key>' --link sentry-postgres:postgres --link sentry-redis:redis sentry run worker
+
+
+9 open browser to http://ip:9000
